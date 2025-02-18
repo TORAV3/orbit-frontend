@@ -19,46 +19,24 @@ html(lang="en" data-theme="light")
                 iconify-icon(icon="radix-icons:cross-2")
             div
                 a.sidebar-logo(href="index.html")
-                    img.light-logo(src="/iso/images/logo-iso.png" alt="site logo")
-                    img.dark-logo(src="/assets/images/logo-light.png" alt="site logo")
-                    img.logo-icon(src="/iso/images/logo-icon-iso.png" alt="site logo")
+                    img.light-logo(src="/orbit/images/logo-iso.png" alt="site logo")
+                    img.dark-logo(src="/orbit/images/logo-iso.png" alt="site logo")
+                    img.logo-icon(src="/orbit/images/logo-icon-iso.png" alt="site logo")
             div.sidebar-menu-area
                 ul.sidebar-menu#sidebar-menu
-                    if userData.type === 'student'
-                        li(class=url==='/kelas' || url.includes('/kelas/') ? 'active-page' : '')  
-                            a(href="/kelas" class=url==='/kelas' || url.includes('/kelas/') ? 'active-page' : '')
-                                iconify-icon(icon="solar:notebook-minimalistic-outline" class="menu-icon")
-                                span Kelas Online
-                    if userData.type === 'internal' && userData.access.mkelas === '1'
-                        li(class=url==='/manajemen-kelas' || url.includes('/manajemen-kelas/') ? 'active-page' : '')  
-                            a(href="/manajemen-kelas" class=url==='/manajemen-kelas' || url.includes('/manajemen-kelas/') ? 'active-page' : '')
-                                iconify-icon(icon="mdi:book-cog-outline" class="menu-icon")
-                                span Manajemen Kelas
-                    if userData.type === 'internal' && userData.access.muser === '1'
-                        li(class=url==='/manajemen-user' || url.includes('/manajemen-user/detail/') ? 'active-page' : '')  
-                            a(href="/manajemen-user" class=url==='/manajemen-user' || url.includes('/manajemen-user/detail/') ? 'active-page' : '')
-                                iconify-icon(icon="solar:users-group-rounded-outline" class="menu-icon")
-                                span(style="font-size:12px") Manajemen Pengguna
-                    if userData.type === 'internal' && userData.access.usaccess === '1'
-                        li(class=url==='/user-access' || url.includes('/user-access/edit/') || url==='/user-access/tambah' ? 'active-page' : '')  
-                            a(href="/user-access" class=url==='/user-access' || url.includes('/user-access/edit/') || url==='/user-access/tambah' ? 'active-page' : '')
-                                iconify-icon(icon="solar:shield-user-broken" class="menu-icon")
-                                span User Access
-                    if userData.type === 'internal'
-                        li(class=url==='/manajemen-soal' || url.includes('/manajemen-soal/edit/') || url==='/manajemen-soal/tambah' ? 'active-page' : '')  
-                            a(href="/manajemen-soal" class=url==='/manajemen-soal' || url.includes('/manajemen-soal/edit/') || url==='/manajemen-soal/tambah' ? 'active-page' : '')
-                                iconify-icon(icon="solar:shield-user-broken" class="menu-icon")
-                                span Manajemen Ujian
-                    if userData.type === 'internal' && (userData.access.mintquestion === '1')
-                        li(class=url==='/manajemen-wawancara' || url.includes('/manajemen-wawancara/') ? 'dropdown open' : 'dropdown')
-                            a(href="javascript:void(0)")
-                                iconify-icon(icon="solar:home-smile-angle-outline" class="menu-icon")
-                                span(style="font-size:10px") Manajemen Wawancara
-                            ul(class=url==='/manajemen-wawancara' || url.includes('/manajemen-wawancara/') ? 'sidebar-submenu show' : 'sidebar-submenu')
-                                li(class=url==='/manajemen-wawancara/pertanyaan' || url.includes('/manajemen-wawancara/pertanyaan/') ? 'active-page' : '') 
-                                    a(href="/manajemen-wawancara/pertanyaan" style="font-size:10px" class=url==='/manajemen-wawancara/pertanyaan' || url.includes('/manajemen-wawancara/pertanyaan/') ? 'active-page' : '')
-                                        i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
-                                        | Pertanyaan Wawancara
+                    li(class='dropdown open')
+                        a(href="javascript:void(0)")
+                            iconify-icon(icon="solar:home-smile-angle-outline" class="menu-icon")
+                            span Transaksi
+                        ul(class='sidebar-submenu')
+                            li(class='active-page') 
+                                a(href="/transaksi/awb/form" class='active-page')
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Inputan AWB
+                            li() 
+                                a(href="/transaksi/awb" )
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Daftar AWB
         main.dashboard-main
             .navbar-header
                 .row.align-items-center.justify-content-between
@@ -80,16 +58,14 @@ html(lang="en" data-theme="light")
                                     data-bs-toggle="dropdown"
                                 )
                                     img.w-40-px.h-40-px.object-fit-cover.rounded-circle(
-                                        src= userData.type === 'student' && userData.userDetail && userData.userDetail.pasFotoBase64 
-                                            ? userData.userDetail.pasFotoBase64 
-                                            : '/iso/images/noimages.jpg',
+                                        src= '/orbit/images/noimages.jpg'
                                         alt="image"
                                     )
                                 div.dropdown-menu.to-top.dropdown-menu-sm
                                     div.py-12.px-16.radius-8.bg-primary-50.mb-16.d-flex.align-items-center.justify-content-between.gap-2
                                         div
-                                            h6.text-lg.text-primary-light.fw-semibold.mb-2 #{userData.fullname}
-                                            span.text-secondary-light.fw-medium.text-sm #{userData.type === "student" ? "Student" : userData.role.name}
+                                            h6.text-lg.text-primary-light.fw-semibold.mb-2 Admin
+                                            span.text-secondary-light.fw-medium.text-sm Super User
                                         button(type="button" class="hover-text-danger")
                                             iconify-icon.icon(
                                                 icon="radix-icons:cross-1",
