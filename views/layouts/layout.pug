@@ -24,15 +24,11 @@ html(lang="en" data-theme="light")
                     img.logo-icon(src="/orbit/images/logo-icon-iso.png" alt="site logo")
             div.sidebar-menu-area
                 ul.sidebar-menu#sidebar-menu
-                    li(class='dropdown open')
+                    li(class=url.includes('/transaksi/awb') ? 'dropdown open' : 'dropdown')
                         a(href="javascript:void(0)")
                             iconify-icon(icon="solar:home-smile-angle-outline" class="menu-icon")
                             span Transaksi
-                        ul(class='sidebar-submenu')
-                            li(class='active-page') 
-                                a(href="/transaksi/awb/form" class='active-page')
-                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
-                                    | Inputan AWB
+                        ul(class=url.includes('/transaksi/awb') ? 'sidebar-submenu show' : 'sidebar-submenu')
                             li() 
                                 a(href="/transaksi/awb" )
                                     i(class="ri-circle-fill circle-icon text-primary-600 w-auto")

@@ -4,7 +4,7 @@ function loadData(id) {
     // .headers({
     //   Authorization: "Bearer " + token,
     // })
-    .get("http://localhost:3000/orbit/api/awb/data/byid/" + id)
+    .get("http://localhost:3000/orbit/api/transaksi/awb/data/byid/" + id)
     .then(function (data) {
       var datanya = JSON.parse(data.text());
 
@@ -79,37 +79,29 @@ function loadData(id) {
     });
 }
 
-function loadComboData(url, comboId, varid, varbesname, arrayData) {
-  const transformedData = arrayData.map(function (i) {
-    return {
-      id: i[varid],
-      value: i[varbesname],
-    };
-  });
-  const cbbox = $$(comboId);
-  cbbox.define("options", transformedData);
-  cbbox.refresh();
-  // axios
-  //   .get(`http://localhost:3000/orbit/api/${url}`, {
-  //     headers: {
-  //       Authorization: "Bearer " + token,
-  //     },
-  //   })
-  //   .then((res) => {
-  //     const transformedData = res.data.data.map(function (i) {
-  //       return {
-  //         id: i[varid],
-  //         value: i[varbesname],
-  //       };
-  //     });
-  //     const cbbox = $$(comboId);
-  //     cbbox.define("options", transformedData);
-  //     cbbox.refresh();
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //     webix.message({ type: "error", text: err.response.data.data });
-  //   });
+function loadComboData(url, comboId, varid, varbesname) {
+  webix
+    .ajax()
+    // .headers({
+    //   Authorization: "Bearer " + token,
+    // })
+    .get("http://localhost:3000/orbit/api/" + url)
+    .then(function (data) {
+      var datanya = JSON.parse(data.text());
+
+      const transformedData = datanya.data.map(function (i) {
+        return {
+          id: i[varid],
+          value: i[varbesname],
+        };
+      });
+      const cbbox = $$(comboId);
+      cbbox.define("options", transformedData);
+      cbbox.refresh();
+    })
+    .catch(function (error) {
+      console.error("Error:", error);
+    });
 }
 
 var arrCustomer = [
@@ -1260,7 +1252,7 @@ function submit_awb() {
     webix
       .ajax()
       // .headers({ Authorization: "Bearer " + token })
-      .post("http://localhost:3000/orbit/api/awb/tambah", formData)
+      .post("http://localhost:3000/orbit/api/transaksi/awb/tambah", formData)
       .then(function (data) {
         var datanya = JSON.parse(data.text());
         webix.message({
@@ -1310,23 +1302,21 @@ webix.ready(function () {
     grid.adjust();
   });
 
-  loadComboData("customer", "cltbcust_csacc", "csacc", "csname", arrCustomer);
-  loadComboData("service", "trntypeofservice", "svsrv", "svname", arrService);
+  loadComboData("master/customer/data", "cltbcust_csacc", "csacc", "csname");
+  loadComboData("master/service/data", "trntypeofservice", "svsrv", "svname");
   loadComboData(
-    "packaging",
+    "master/typepackage/data",
     "trntypeofpackage",
     "pkid",
-    "pkdesc",
-    arrPackageType
+    "pkdesc"
   );
-  loadComboData("tlc", "trnorg", "tltlccode", "tlname", arrTlc);
-  loadComboData("tlc", "trndest", "tltlccode", "tlname", arrTlc);
+  loadComboData("master/tlc/data", "trnorg", "tltlccode", "tlname");
+  loadComboData("master/tlc/data", "trndest", "tltlccode", "tlname");
   loadComboData(
-    "payment",
+    "master/typepayment/data",
     "trntypeofpayment",
     "pyid",
-    "pydesc",
-    arrPaymentType
+    "pydesc"
   );
 
   [
