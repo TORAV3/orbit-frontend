@@ -24,15 +24,17 @@ html(lang="en" data-theme="light")
                     img.logo-icon(src="/orbit/images/logo-icon-iso.png" alt="site logo")
             div.sidebar-menu-area
                 ul.sidebar-menu#sidebar-menu
-                    li(class=url.includes('/transaksi/awb') ? 'dropdown open' : 'dropdown')
-                        a(href="javascript:void(0)")
-                            iconify-icon(icon="solar:home-smile-angle-outline" class="menu-icon")
-                            span Transaksi
-                        ul(class=url.includes('/transaksi/awb') ? 'sidebar-submenu show' : 'sidebar-submenu')
-                            li() 
-                                a(href="/transaksi/awb" )
-                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
-                                    | Daftar AWB
+                    if userData.cltbduser.tawb === '1'
+                        li(class=url.includes('/transaksi/awb') ? 'dropdown open' : 'dropdown')
+                            a(href="javascript:void(0)")
+                                iconify-icon(icon="solar:home-smile-angle-outline" class="menu-icon")
+                                span Transaksi
+                            ul(class=url.includes('/transaksi/awb') ? 'sidebar-submenu show' : 'sidebar-submenu')
+                                if userData.cltbduser.tawb === '1'
+                                    li(class=url.includes('/transaksi/awb') ? 'active-page' : '') 
+                                        a(href="/transaksi/awb" class=url.includes('/transaksi/awb') ? 'active-page' : '')
+                                            i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                            | Daftar AWB
         main.dashboard-main
             .navbar-header
                 .row.align-items-center.justify-content-between
@@ -60,8 +62,8 @@ html(lang="en" data-theme="light")
                                 div.dropdown-menu.to-top.dropdown-menu-sm
                                     div.py-12.px-16.radius-8.bg-primary-50.mb-16.d-flex.align-items-center.justify-content-between.gap-2
                                         div
-                                            h6.text-lg.text-primary-light.fw-semibold.mb-2 Admin
-                                            span.text-secondary-light.fw-medium.text-sm Super User
+                                            h6.text-lg.text-primary-light.fw-semibold.mb-2 #{userData.usrname}
+                                            span.text-secondary-light.fw-medium.text-sm #{userData.cltbrole.rolename}
                                         button(type="button" class="hover-text-danger")
                                             iconify-icon.icon(
                                                 icon="radix-icons:cross-1",
