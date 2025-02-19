@@ -8,7 +8,7 @@ function loadData(status = "all") {
     // .headers({
     //   Authorization: "Bearer " + token,
     // })
-    .get("http://localhost:3000/orbit/api/awb/data")
+    .get("http://localhost:3000/orbit/api/transaksi/awb/data")
     .then(function (data) {
       var datanya = JSON.parse(data.text());
 
@@ -16,11 +16,11 @@ function loadData(status = "all") {
         const transformedData = datanya.data.map(function (i) {
           return {
             trnnohawb: i.trnnohawb,
-            cltbcust_csacc: i.cltbcust_csacc,
+            cltbcust_csacc: i.cltbcust.csname,
             trndate: i.trndate,
-            trntypeofservice: i.trntypeofservice,
-            trntypeofpackage: i.trntypeofpackage,
-            trnorg: i.trnorg,
+            trntypeofservice: i.cldtsrv.svname,
+            trntypeofpackage: i.cltbtypeofpackage.pkdesc,
+            trnorg: i.cltbtlc.tlname,
             trndest: i.trndest,
             trnsubdest: i.trnsubdest,
           };
@@ -33,6 +33,23 @@ function loadData(status = "all") {
         $$("table").clearAll();
         $$("table").showOverlay("Maaf, data tidak ditemukan");
       }
+    })
+    .catch(function (error) {
+      console.error("Error:", error);
+    });
+}
+
+function deleteData(id) {
+  webix
+    .ajax()
+    // .headers({
+    //   Authorization: "Bearer " + token,
+    // })
+    .del(`http://localhost:3000/orbit/api/transaksi/awb/delete/byid/${id}`)
+    .then(function (data) {
+      var datanya = JSON.parse(data.text());
+      webix.message({ type: "success", text: datanya.data });
+      loadData();
     })
     .catch(function (error) {
       console.error("Error:", error);
@@ -62,8 +79,8 @@ var toolbar = {
 
 var edit =
   "<span class='webix_icon me-1 editBtn' style='cursor:pointer;'><iconify-icon icon='solar:pen-new-round-linear' style='color:#398bf1;'></iconify-icon></span>";
-// var trash =
-//   "<span class='webix_icon delBtn' style='cursor:pointer;'><iconify-icon icon='solar:trash-bin-2-linear' style='color:red;'></iconify-icon></span>";
+var trash =
+  "<span class='webix_icon delBtn' style='cursor:pointer;'><iconify-icon icon='solar:trash-bin-2-linear' style='color:red;'></iconify-icon></span>";
 // var changeActive =
 //   "<span class='webix_icon me-1 activeBtn' style='cursor:pointer;'><iconify-icon icon='solar:user-check-rounded-outline' style='color:#6e006e;'></iconify-icon></span>";
 // var changeInactive =
@@ -87,7 +104,7 @@ var tabcols = [
   {
     id: "cltbcust_csacc",
     header: "Customer",
-    width: 300,
+    width: 250,
     sort: "string",
   },
   {
@@ -99,28 +116,34 @@ var tabcols = [
   {
     id: "trntypeofservice",
     header: "Tipe Service",
-    width: 100,
+    width: 180,
     sort: "string",
   },
-  { id: "trntypeofpackage", header: "Tipe Barang", width: 100, sort: "string" },
+  {
+    id: "trntypeofpackage",
+    header: { text: "Tipe Kiriman", css: { "text-align": "center" } },
+    width: 100,
+    sort: "string",
+    css: { "text-align": "center" },
+  },
   {
     id: "trnorg",
     header: { text: "Origin", css: { "text-align": "center" } },
-    width: 100,
+    width: 150,
     sort: "string",
     css: { "text-align": "center" },
   },
   {
     id: "trndest",
     header: { text: "Destinasi", css: { "text-align": "center" } },
-    width: 100,
+    width: 150,
     sort: "string",
     css: { "text-align": "center" },
   },
   {
     id: "trnsubdest",
     header: { text: "HUB", css: { "text-align": "center" } },
-    width: 100,
+    width: 180,
     sort: "string",
     css: { "text-align": "center" },
   },
@@ -139,10 +162,15 @@ var table = {
       var trnnohawb = item.trnnohawb;
       window.location.href = `/transaksi/awb/form/${trnnohawb}`;
     },
+    delBtn: function (event, id, node) {
+      var item = this.getItem(id.row);
+      var trnnohawb = item.trnnohawb;
+      deleteData(trnnohawb);
+    },
   },
   scheme: {
     $change: function (obj) {
-      obj.action = edit;
+      obj.action = edit + trash;
     },
   },
   navigation: true,
