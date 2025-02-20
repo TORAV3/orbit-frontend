@@ -1,0 +1,12 @@
+.save-icon-button,
+.delete-icon-button {
+  border: none;
+  background: transparent;
+  font-size: 25px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.text-center {
+  text-align: center;
+}

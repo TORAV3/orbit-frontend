@@ -23,7 +23,37 @@ html(lang="en" data-theme="light")
                     img.dark-logo(src="/orbit/images/logo-iso.png" alt="site logo")
                     img.logo-icon(src="/orbit/images/logo-icon-iso.png" alt="site logo")
             div.sidebar-menu-area
-                ul.sidebar-menu#sidebar-menu
+                ul.sidebar-menu#sidebar-menu                   
+                    li(class='dropdown')
+                        a(href="javascript:void(0)")
+                            iconify-icon(icon="solar:database-outline" class="menu-icon")
+                            span Master
+                        ul(class='sidebar-submenu')
+                            li() 
+                                a(href="/master/groupcustomer")
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Group Customer
+                            li() 
+                                a(href="/master/customer" )
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Customer
+                            li() 
+                                a(href="/master/service" )
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Service
+                            li() 
+                                a(href="/master/tlc" )
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | TLC
+                            li() 
+                                a(href="/master/payment" )
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Payment
+
+                            li() 
+                                a(href="/master/package" )
+                                    i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                                    | Package
                     if userData.cltbduser.tawb === '1'
                         li(class=url.includes('/transaksi/awb') ? 'dropdown open' : 'dropdown')
                             a(href="javascript:void(0)")
@@ -35,6 +65,7 @@ html(lang="en" data-theme="light")
                                         a(href="/transaksi/awb" class=url.includes('/transaksi/awb') ? 'active-page' : '')
                                             i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
                                             | Daftar AWB
+
         main.dashboard-main
             .navbar-header
                 .row.align-items-center.justify-content-between

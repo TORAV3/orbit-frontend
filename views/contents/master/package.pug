@@ -1,0 +1,16 @@
+extends ../../layouts/layout
+
+block title
+  | Package
+
+block csslink
+  link(rel='stylesheet' href='/orbit/css/master/groupcustomer.css')
+
+block content
+  .d-flex.flex-wrap.align-items-center.justify-content-between.gap-3.mb-24
+    h6.fw-semibold.mb-0 Package
+  #index-page
+
+block script
+  script(src='/orbit/js/master/package.js')
+  script(src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" type="text/javascript")
