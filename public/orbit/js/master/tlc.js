@@ -241,27 +241,62 @@ var tabview = {
       id: "browseTab",
       width: 150,
       body: {
-        view: "datatable",
-        id: "tlcTable",
-        columns: [
-          { id: "code", header: "TLC Code", width: 100 },
-          { id: "name", header: "TLC Name", width: 200 },
-          { id: "hub", header: "HUB (Via)", width: 100 },
-          { id: "mainBranch", header: "Cabang Utama", width: 120 },
-          { id: "international", header: "International", width: 120 },
-        ],
-        autoheight: true,
-        select: true,
-        on: {
-          onItemClick: function (id) {
-            var selected = this.getItem(id);
-            selected.mainBranch = selected.mainBranch === "True" ? 1 : 0;
-            selected.international = selected.international === "True" ? 1 : 0;
-            $$("tlcForm").setValues(selected);
-            $$("tlcForm").elements.code.disable();
-            $$("mainTab").getTabbar().setValue("inputTab");
+        rows: [
+          {
+            view: "toolbar",
+            css: "toolbar",
+            padding: 15,
+            cols: [
+              {
+                width: 480,
+                view: "text",
+                id: "textSearch",
+                placeholder: "Ketik disini untuk mencari data",
+                align: "right",
+                on: {
+                  onTimedKeyPress: function () {
+                    const value = this.getValue().toLowerCase();
+                    $$("tlcTable").filter(function (obj) {
+                      for (let key in obj) {
+                        if (
+                          obj[key] &&
+                          obj[key].toString().toLowerCase().includes(value)
+                        ) {
+                          return true;
+                        }
+                      }
+                      return false;
+                    });
+                  },
+                },
+              },
+            ],
           },
-        },
+          {
+            view: "datatable",
+            id: "tlcTable",
+            columns: [
+              { id: "code", header: "TLC Code", width: 100 },
+              { id: "name", header: "TLC Name", width: 200 },
+              { id: "hub", header: "HUB (Via)", width: 100 },
+              { id: "mainBranch", header: "Cabang Utama", width: 120 },
+              { id: "international", header: "International", width: 120 },
+            ],
+            autoheight: true,
+            select: true,
+            on: {
+              onItemClick: function (id) {
+                var selected = this.getItem(id);
+                selected.mainBranch = selected.mainBranch === "True" ? 1 : 0;
+                selected.international =
+                  selected.international === "True" ? 1 : 0;
+                $$("tlcForm").setValues(selected);
+                $$("tlcForm").elements.code.disable();
+                $$("mainTab").getTabbar().setValue("inputTab");
+              },
+            },
+          },
+        ],
       },
     },
   ],
