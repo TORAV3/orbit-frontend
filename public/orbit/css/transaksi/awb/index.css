@@ -31,3 +31,24 @@
 .tableStyle .webix_hs_right {
   background: white;
 }
+
+.formStyle {
+  border: none;
+}
+
+.uploadstyle {
+  border: none;
+
+  .webix_template {
+    padding: 0;
+  }
+}
+
+.btnSimpan .webix_el_box button,
+.btnSimpan .webix_el_box button:hover,
+.btnSimpan .webix_el_box button:focus {
+  background-color: #316aff;
+  color: white;
+  border-radius: 7px;
+  text-align: center;
+}

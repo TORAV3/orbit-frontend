@@ -1,16 +1,23 @@
 extends ../../../layouts/layout
 
 block title
-    | Daftar AWB
+  | Daftar AWB
 
 block csslink
-    link(rel='stylesheet' href='/orbit/css/transaksi/awb/index.css')
+  link(rel='stylesheet' href='/orbit/css/transaksi/awb/index.css')
 
 block content
-    #index-page
+  #index-page
+  div(class="modal fade" id="podModal" tabindex="-1" aria-labelledby="podModal" aria-hidden="true")
+    div(class="modal-dialog modal-md modal-dialog modal-dialog-centered")
+      div(class="modal-content radius-16 bg-base")
+        div(class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0")
+          button(type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close")
+        div(class="modal-body p-24")
+          #pod-modal-page
 
 block script
-    script(src='/orbit/js/transaksi/awb/index.js')
+  script(src='/orbit/js/transaksi/awb/index.js')
 
 //- block js
 //-   script.
