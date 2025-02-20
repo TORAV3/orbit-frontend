@@ -1,24 +1,28 @@
-function loadUserData(status = "all") {
+function loadData(status = "all") {
   $$("table").showProgress({
     type: "icon",
   });
 
-  axios
-    .get(`http://localhost:3000/iso/api/user/internal?status=${status}`, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-    .then((res) => {
-      if (res.data.data.length > 0) {
-        const transformedData = res.data.data.map(function (item) {
+  webix
+    .ajax()
+    // .headers({
+    //   Authorization: "Bearer " + token,
+    // })
+    .get("http://localhost:3000/orbit/api/transaksi/awb/data")
+    .then(function (data) {
+      var datanya = JSON.parse(data.text());
+
+      if (datanya.data.length > 0) {
+        const transformedData = datanya.data.map(function (i) {
           return {
-            id: item.id,
-            fullname: item.fullname.toUpperCase(),
-            email: item.email,
-            phone: item.phone,
-            role: item.role.name,
-            status: item.activeStatus,
+            trnnohawb: i.trnnohawb,
+            cltbcust_csacc: i.cltbcust.csname,
+            trndate: i.trndate,
+            trntypeofservice: i.cldtsrv.svname,
+            trntypeofpackage: i.cltbtypeofpackage.pkdesc,
+            trnorg: i.cltbtlc.tlname,
+            trndest: i.trndest,
+            trnsubdest: i.trnsubdest,
           };
         });
 
@@ -30,72 +34,27 @@ function loadUserData(status = "all") {
         $$("table").showOverlay("Maaf, data tidak ditemukan");
       }
     })
-    .catch((err) => {
-      $$("table").clearAll();
-      $$("table").showOverlay("Failed to load data.");
-      console.log(err);
-      webix.message({ type: "error", text: err.response.data.data });
-    })
-    .finally(function () {
-      $$("table").hideProgress();
+    .catch(function (error) {
+      console.error("Error:", error);
     });
 }
 
-function changeStatus(id, status) {
-  axios
-    .put(
-      `http://localhost:3000/iso/api/user/internal/edit/status/${id}`,
-      { status },
-      {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      }
-    )
-    .then((res) => {
-      webix.message({ type: "success", text: res.data.data });
-      loadUserData();
+function deleteData(id) {
+  webix
+    .ajax()
+    // .headers({
+    //   Authorization: "Bearer " + token,
+    // })
+    .del(`http://localhost:3000/orbit/api/transaksi/awb/delete/byid/${id}`)
+    .then(function (data) {
+      var datanya = JSON.parse(data.text());
+      webix.message({ type: "success", text: datanya.data });
+      loadData();
     })
-    .catch((err) => {
-      console.log(err);
-      webix.message({ type: "error", text: err.response.data.data });
+    .catch(function (error) {
+      console.error("Error:", error);
     });
 }
-
-function deleteUser(id) {
-  axios
-    .delete(`http://localhost:3000/iso/api/user/internal/delete/${id}`, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-    .then((res) => {
-      webix.message({ type: "success", text: res.data.data });
-      loadUserData();
-    })
-    .catch((err) => {
-      console.log(err);
-      webix.message({ type: "error", text: err.response.data.data });
-    });
-}
-
-var statusCombo = {
-  view: "combo",
-  value: "all",
-  options: [
-    { id: "all", value: "All" },
-    { id: "0", value: "Inactive" },
-    { id: "1", value: "Active" },
-  ],
-  width: 100,
-  name: "status",
-  align: "left",
-  on: {
-    onChange: function (newValue) {
-      loadUserData(newValue);
-    },
-  },
-};
 
 var searchForm = {
   maxWidth: 230,
@@ -113,18 +72,19 @@ var searchForm = {
 
 var toolbar = {
   view: "toolbar",
-  paddingY: 2,
-  cols: [statusCombo, {}, searchForm],
+  css: "toolbar",
+  padding: 15,
+  cols: [{}, {}, searchForm],
 };
 
 var edit =
   "<span class='webix_icon me-1 editBtn' style='cursor:pointer;'><iconify-icon icon='solar:pen-new-round-linear' style='color:#398bf1;'></iconify-icon></span>";
 var trash =
   "<span class='webix_icon delBtn' style='cursor:pointer;'><iconify-icon icon='solar:trash-bin-2-linear' style='color:red;'></iconify-icon></span>";
-var changeActive =
-  "<span class='webix_icon me-1 activeBtn' style='cursor:pointer;'><iconify-icon icon='solar:user-check-rounded-outline' style='color:#6e006e;'></iconify-icon></span>";
-var changeInactive =
-  "<span class='webix_icon me-1 inactiveBtn' style='cursor:pointer;'><iconify-icon icon='solar:user-cross-linear' style='color:#6e006e;'></iconify-icon></span>";
+// var changeActive =
+//   "<span class='webix_icon me-1 activeBtn' style='cursor:pointer;'><iconify-icon icon='solar:user-check-rounded-outline' style='color:#6e006e;'></iconify-icon></span>";
+// var changeInactive =
+//   "<span class='webix_icon me-1 inactiveBtn' style='cursor:pointer;'><iconify-icon icon='solar:user-cross-linear' style='color:#6e006e;'></iconify-icon></span>";
 
 var tabcols = [
   { id: "trnnohawb", hidden: true },
@@ -136,32 +96,83 @@ var tabcols = [
   },
   {
     id: "trnnohawb",
-    header: "No. AWB",
-    minWidth: 150,
+    header: { text: "No. AWB", css: { "text-align": "center" } },
+    width: 150,
+    sort: "string",
+    css: { "text-align": "center" },
+  },
+  {
+    id: "cltbcust_csacc",
+    header: "Customer",
+    width: 250,
     sort: "string",
   },
-  { id: "cltbcust_csacc", header: "Customer", width: 400,
-    fillspace: true, sort: "string" },
-  { id: "trndate", header: "Tanggal", width: 170 },
-  { id: "trntypeofservice", header: "Tipe Service", width: 100, sort: "string" },
-  { id: "trntypeofpackage", header: "Tipe Barang", width: 100, sort: "string" },
-  { id: "trnorg", header: "Origin", width: 100, sort: "string" },
-  { id: "trndest", header: "Destinasi", width: 100, sort: "string" },
-  { id: "trnsubdest", header: "HUB", width: 100, sort: "string" },
-  // {
-  //   id: "status",
-  //   header: { text: "Status", css: { "text-align": "center" } },
-  //   css: { "text-align": "center" },
-  //   width: 100,
-  //   sort: "string",
-  // },
+  {
+    id: "trndate",
+    header: { text: "Tanggal", css: { "text-align": "center" } },
+    width: 170,
+    css: { "text-align": "center" },
+  },
+  {
+    id: "trntypeofservice",
+    header: "Tipe Service",
+    width: 180,
+    sort: "string",
+  },
+  {
+    id: "trntypeofpackage",
+    header: { text: "Tipe Kiriman", css: { "text-align": "center" } },
+    width: 100,
+    sort: "string",
+    css: { "text-align": "center" },
+  },
+  {
+    id: "trnorg",
+    header: { text: "Origin", css: { "text-align": "center" } },
+    width: 150,
+    sort: "string",
+    css: { "text-align": "center" },
+  },
+  {
+    id: "trndest",
+    header: { text: "Destinasi", css: { "text-align": "center" } },
+    width: 150,
+    sort: "string",
+    css: { "text-align": "center" },
+  },
+  {
+    id: "trnsubdest",
+    header: { text: "HUB", css: { "text-align": "center" } },
+    width: 180,
+    sort: "string",
+    css: { "text-align": "center" },
+  },
 ];
 
 var table = {
   view: "datatable",
   id: "table",
   columns: tabcols,
+  css: "tableStyle",
   autoheight: true,
+  minHeight: 100,
+  onClick: {
+    editBtn: function (event, id, node) {
+      var item = this.getItem(id.row);
+      var trnnohawb = item.trnnohawb;
+      window.location.href = `/transaksi/awb/form/${trnnohawb}`;
+    },
+    delBtn: function (event, id, node) {
+      var item = this.getItem(id.row);
+      var trnnohawb = item.trnnohawb;
+      deleteData(trnnohawb);
+    },
+  },
+  scheme: {
+    $change: function (obj) {
+      obj.action = edit + trash;
+    },
+  },
   navigation: true,
   pager: "pager",
 };
@@ -181,7 +192,10 @@ var datatable = {
 
 var title = {
   view: "template",
-  template: "Daftar AWB",
+  template: `<div style='display:flex; align-items:center; justify-content: space-between'>
+                <span style='font-size: 1.5rem'>Daftar AWB</span>
+                <a class='btn btn-primary' href="/transaksi/awb/form">Tambah</a>
+            </div>`,
   autoheight: true,
   css: "title",
 };
@@ -212,5 +226,5 @@ webix.ready(function () {
     grid.adjust();
   });
 
-  // loadUserData();
+  loadData();
 });

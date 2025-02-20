@@ -4,11 +4,11 @@ const checkToken = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
-    return res.redirect("/login");
+    return res.redirect("/");
   }
 
   axios
-    .get("http://localhost:3000/iso/api/login/data", {
+    .get("http://localhost:3000/orbit/api/login/data", {
       headers: {
         Authorization: "Bearer " + token,
       },
@@ -25,11 +25,14 @@ const checkToken = (req, res, next) => {
     })
     .catch((err) => {
       if (err.status === 404 || err.status === 401) {
-        return res.redirect("/login");
+        return res.redirect("/");
       } else {
         return res.redirect("/error");
       }
     });
+
+  // res.locals.url = req.originalUrl;
+  // next();
 };
 
 const checkInternal = (req, res, next) => {
