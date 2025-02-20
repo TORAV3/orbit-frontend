@@ -1241,7 +1241,7 @@ function submit_awb() {
 
     let pdate = $$("trnpickupdate").getValue();
     if (pdate) {
-      pdate.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      pdate.setMinutes(pdate.getMinutes() - pdate.getTimezoneOffset());
     }
 
     var formData = form.getValues();
