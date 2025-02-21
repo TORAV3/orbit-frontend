@@ -1,0 +1,24 @@
+.add-icon-button,
+.delete-icon-button {
+  border: none;
+  background: transparent;
+  font-size: 25px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.button-cari .webix_el_box button {
+  background-color: #be1e2d;
+  color: white;
+  border-radius: 7px;
+  text-align: center;
+  height: 60%;
+  margin-top: 22px;
+}
+
+.button-save-checkpoint .webix_el_box button {
+  background-color: #be1e2d;
+  color: white;
+  border-radius: 7px;
+  text-align: center;
+}
