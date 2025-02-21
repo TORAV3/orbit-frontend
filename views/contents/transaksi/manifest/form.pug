@@ -1,0 +1,20 @@
+extends ../../../layouts/layout
+
+block title
+  | Form Manifest
+
+block csslink
+  link(rel='stylesheet' href='/orbit/css/transaksi/manifest/form.css')
+  link(rel='stylesheet' href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css")
+
+block content
+  #index-page
+
+block script
+  script(src='/orbit/js/transaksi/manifest/form.js')
+  script(src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js")
+
+
+block js
+  script.
+    window.pageId = "#{id}";

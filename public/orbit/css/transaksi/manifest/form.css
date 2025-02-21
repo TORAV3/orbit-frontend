@@ -1,0 +1,20 @@
+.btnSimpan .webix_el_box button,
+.btnSimpan .webix_el_box button:hover,
+.btnSimpan .webix_el_box button:focus {
+  background-color: #316aff;
+  color: white;
+  border-radius: 7px;
+  text-align: center;
+}
+
+.select2style {
+  border: none;
+
+  .webix_template {
+    padding: 0;
+  }
+}
+
+.selection {
+  min-width: 100%;
+}

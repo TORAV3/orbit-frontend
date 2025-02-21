@@ -16,46 +16,49 @@ app.get("/", (req, res) => {
   res.render("contents/login");
 });
 
-app.get("/transaksi/awb", checkToken, (req, res) => {
+app.get("/transaksi/hawb", checkToken, (req, res) => {
   res.render("contents/transaksi/awb/index");
 });
 
-app.get("/transaksi/awb/form", checkToken, (req, res) => {
+app.get("/transaksi/hawb/form", checkToken, (req, res) => {
   res.render("contents/transaksi/awb/form");
 });
 
+app.get("/transaksi/hawb/form/:id", checkToken, (req, res) => {
+  const { id } = req.params;
+  res.render("contents/transaksi/awb/form", { id });
+});
 
-app.get("/master/groupcustomer", (req, res) => {
+app.get("/transaksi/manifest/form", checkToken, (req, res) => {
+  res.render("contents/transaksi/manifest/form");
+});
+
+app.get("/master/groupcustomer", checkToken, (req, res) => {
   res.render("contents/master/groupcustomer");
 });
 
-app.get("/master/customer", (req, res) => {
+app.get("/master/customer", checkToken, (req, res) => {
   res.render("contents/master/customer");
 });
 
-app.get("/master/service", (req, res) => {
+app.get("/master/service", checkToken, (req, res) => {
   res.render("contents/master/service");
 });
 
-app.get("/master/payment", (req, res) => {
+app.get("/master/payment", checkToken, (req, res) => {
   res.render("contents/master/payment");
 });
 
-app.get("/master/package", (req, res) => {
+app.get("/master/package", checkToken, (req, res) => {
   res.render("contents/master/package");
 });
 
-app.get("/master/tlc", (req, res) => {
+app.get("/master/tlc", checkToken, (req, res) => {
   res.render("contents/master/tlc");
 });
 
-app.get("/master/customer", (req, res) => {
+app.get("/master/customer", checkToken, (req, res) => {
   res.render("contents/master/customer");
-});
-
-app.get("/transaksi/awb/form/:id", checkToken, (req, res) => {
-  const { id } = req.params;
-  res.render("contents/transaksi/awb/form", { id });
 });
 
 app.listen(process.env.PORT, () => {
