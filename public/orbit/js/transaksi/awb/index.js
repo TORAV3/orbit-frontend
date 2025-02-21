@@ -424,7 +424,7 @@ var title = {
   view: "template",
   template: `<div style='display:flex; align-items:center; justify-content: space-between'>
                 <span style='font-size: 1.5rem'>Daftar AWB</span>
-                <a class='btn btn-primary' href="/transaksi/awb/form">Tambah</a>
+                <a class='btn btn-primary' href="/transaksi/hawb/form">Tambah</a>
             </div>`,
   autoheight: true,
   css: "title",

@@ -183,7 +183,7 @@ var form = {
                   view: "text",
                   name: "trnnohawb",
                   id: "trnnohawb",
-                  label: "No. Waybill",
+                  label: "No. HAWB",
                   labelPosition: "top",
                   minWidth: 300,
                   required: true,
@@ -855,15 +855,93 @@ var form = {
                             },
                           },
                         },
+                        // {
+                        //   view: "text",
+                        //   name: "trnchargekg",
+                        //   id: "trnchargekg",
+                        //   label: "1kg berikutnya",
+                        //   labelPosition: "top",
+                        //   minWidth: 300,
+                        //   inputAlign: "right",
+                        //   value: "0",
+                        //   on: {
+                        //     onChange: function () {
+                        //       let value = this.getValue().replace(
+                        //         /[^0-9]/g,
+                        //         ""
+                        //       );
+
+                        //       // let parts = value.split(",");
+                        //       // if (parts.length > 2) {
+                        //       //   value =
+                        //       //     parts[0] + "," + parts.slice(1).join("");
+                        //       // }
+
+                        //       // let integerPart = parts[0].replace(/\./g, "");
+
+                        //       // integerPart = integerPart.replace(
+                        //       //   /\B(?=(\d{3})+(?!\d))/g,
+                        //       //   "."
+                        //       // );
+
+                        //       // value =
+                        //       //   parts.length > 1
+                        //       //     ? integerPart + "," + parts[1]
+                        //       //     : integerPart;
+
+                        //       this.setValue(value);
+                        //     },
+                        //   },
+                        // },
                         {
                           view: "text",
-                          name: "trnchargekg",
-                          id: "trnchargekg",
-                          label: "1kg berikutnya",
+                          name: "trnchargeswt",
+                          id: "trnchargeswt",
+                          label: "Charges Weight",
                           labelPosition: "top",
                           minWidth: 300,
                           inputAlign: "right",
                           value: "0",
+                          readonly: true,
+                          on: {
+                            onChange: function () {
+                              let value = this.getValue().replace(
+                                /[^0-9]/g,
+                                ""
+                              );
+
+                              // let parts = value.split(",");
+                              // if (parts.length > 2) {
+                              //   value =
+                              //     parts[0] + "," + parts.slice(1).join("");
+                              // }
+
+                              // let integerPart = parts[0].replace(/\./g, "");
+
+                              // integerPart = integerPart.replace(
+                              //   /\B(?=(\d{3})+(?!\d))/g,
+                              //   "."
+                              // );
+
+                              // value =
+                              //   parts.length > 1
+                              //     ? integerPart + "," + parts[1]
+                              //     : integerPart;
+
+                              this.setValue(value);
+                            },
+                          },
+                        },
+                        {
+                          view: "text",
+                          name: "trnfreightcharges",
+                          id: "trnfreightcharges",
+                          label: "Freight Charges",
+                          labelPosition: "top",
+                          minWidth: 300,
+                          inputAlign: "right",
+                          value: "0",
+                          readonly: true,
                           on: {
                             onChange: function () {
                               let value = this.getValue().replace(
@@ -1270,18 +1348,21 @@ function submit_awb() {
 function calculateTotalCharge() {
   let weight = parseFloat($$("trnweight").getValue()) || 0;
   let charge1stKg = parseFloat($$("trncharge1stkg").getValue()) || 0;
-  let chargePerKg = parseFloat($$("trnchargekg").getValue()) || 0;
+  let freightcharges = parseFloat($$("trnfreightcharges").getValue()) || 0;
+  // let chargePerKg = parseFloat($$("trnchargekg").getValue()) || 0;
   let chargePacking = parseFloat($$("trnchargepacking").getValue()) || 0;
   let chargeInsurance = parseFloat($$("trnchargeinsurance").getValue()) || 0;
   let chargeOthers = parseFloat($$("trnchargeothers").getValue()) || 0;
   let discountPercent = parseFloat($$("trndisc").getValue()) || 0;
 
+  // let totalBeforeDiscount =
+  //   charge1stKg +
+  //   Math.max(0, weight - 1) * chargePerKg +
+  //   chargePacking +
+  //   chargeInsurance +
+  //   chargeOthers;
   let totalBeforeDiscount =
-    charge1stKg +
-    Math.max(0, weight - 1) * chargePerKg +
-    chargePacking +
-    chargeInsurance +
-    chargeOthers;
+    freightcharges + chargePacking + chargeInsurance + chargeOthers;
 
   let discountAmount = (discountPercent / 100) * totalBeforeDiscount;
   discountAmount = Math.round(discountAmount);
@@ -1290,6 +1371,38 @@ function calculateTotalCharge() {
   let totalCharge = totalBeforeDiscount - discountAmount;
 
   $$("trntotalcharge").setValue(totalCharge);
+}
+
+function calculateMaxChargesWeight() {
+  let weight = parseFloat($$("trnweight").getValue()) || 0;
+  let dim_l = parseFloat($$("trndim_l").getValue()) || 0;
+  let dim_w = parseFloat($$("trndim_w").getValue()) || 0;
+  let dim_h = parseFloat($$("trndim_h").getValue()) || 0;
+
+  if (weight > (dim_h * dim_l * dim_w) / 6000) {
+    $$("trnchargeswt").setValue(Math.ceil(weight));
+  } else {
+    $$("trnchargeswt").setValue(Math.ceil((dim_h * dim_l * dim_w) / 6000));
+  }
+
+  $$("trnfreightcharges").setValue(
+    $$("trnchargeswt").getValue() * $$("trncharge1stkg").getValue()
+  );
+
+  // let totalBeforeDiscount =
+  //   charge1stKg +
+  //   Math.max(0, weight - 1) * chargePerKg +
+  //   chargePacking +
+  //   chargeInsurance +
+  //   chargeOthers;
+
+  // let discountAmount = (discountPercent / 100) * totalBeforeDiscount;
+  // discountAmount = Math.round(discountAmount);
+  // $$("trndiscamount").setValue(discountAmount);
+
+  // let totalCharge = totalBeforeDiscount - discountAmount;
+
+  // $$("trntotalcharge").setValue(totalCharge);
 }
 
 webix.ready(function () {
@@ -1320,9 +1433,9 @@ webix.ready(function () {
   );
 
   [
-    "trnweight",
+    "trnfreightcharges",
     "trncharge1stkg",
-    "trnchargekg",
+    // "trnchargekg",
     "trnchargepacking",
     "trnchargeinsurance",
     "trnchargeothers",
@@ -1330,6 +1443,12 @@ webix.ready(function () {
   ].forEach((id) => {
     $$(id).attachEvent("onChange", calculateTotalCharge);
   });
+
+  ["trnweight", "trndim_l", "trndim_w", "trndim_h", "trncharge1stkg"].forEach(
+    (id) => {
+      $$(id).attachEvent("onChange", calculateMaxChargesWeight);
+    }
+  );
 
   if (window.pageId) {
     loadData(window.pageId);
