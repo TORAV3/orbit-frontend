@@ -33,6 +33,10 @@ app.get("/transaksi/manifest/form", checkToken, (req, res) => {
   res.render("contents/transaksi/manifest/form");
 });
 
+app.get("/transaksi/checkpoint", (req, res) => {
+  res.render("contents/transaksi/checkpoint");
+});
+
 app.get("/master/groupcustomer", checkToken, (req, res) => {
   res.render("contents/master/groupcustomer");
 });
