@@ -1,85 +1,3 @@
-function loadData(id) {
-  webix
-    .ajax()
-    // .headers({
-    //   Authorization: "Bearer " + token,
-    // })
-    .get("http://localhost:3000/orbit/api/transaksi/manifest/data/byid/" + id)
-    .then(function (data) {
-      var datanya = JSON.parse(data.text());
-
-      $$("mnfid").setValue(datanya.data.mnfid);
-      $$("mnfdate").setValue(datanya.data.mnfdate);
-      $$("mnftlcorg").setValue(datanya.data.mnftlcorg);
-      $$("mnftlcdst").setValue(datanya.data.mnftlcdst);
-      $$("mnfmoda").setValue(datanya.data.mnfmoda);
-      $$("mnfvendordelivery").setValue(datanya.data.mnfvendordelivery);
-      $$("mnfplatno").setValue(datanya.data.mnfplatno);
-      $$("mnftypearmada").setValue(datanya.data.mnftypearmada);
-      $$("mnfpic").setValue(datanya.data.mnfpic);
-      $$("mnfphone").setValue(datanya.data.mnfphone);
-      $$("mnfremark").setValue(datanya.data.mnfremark);
-    })
-    .catch(function (error) {
-      console.error("Error:", error);
-    });
-}
-
-function loadHawbForEdit(mnfid) {
-  Promise.all([
-    webix.ajax().get("http://localhost:3000/orbit/api/transaksi/awb/data/nmnf"), // Get all available HAWBs
-    webix
-      .ajax()
-      .get(
-        "http://localhost:3000/orbit/api/transaksi/manifest-detail/bymnid/" +
-          mnfid
-      ),
-  ])
-    .then(([allHawbData, manifestHawbData]) => {
-      var allHawbs = JSON.parse(allHawbData.text()).data;
-      var manifestHawbs = JSON.parse(manifestHawbData.text()).data.map(
-        (i) => i.cldtracehtrans_trnnohawb
-      );
-
-      var combinedHawbs = [...new Set([...allHawbs, ...manifestHawbs])];
-
-      var options = combinedHawbs.map(function (hawb) {
-        let isSelected = manifestHawbs.includes(hawb) ? "selected" : "";
-        let dataSave = manifestHawbs.includes(hawb) ? `data-save="true"` : "";
-        return `<option value="${hawb}" ${isSelected} ${dataSave}>${hawb}</option>`;
-      });
-
-      $("#hawbSelect").html(options.join("")).trigger("change");
-
-    })
-    .catch(function (error) {
-      console.error("Error:", error);
-    });
-}
-
-function loadHawb() {
-  webix
-    .ajax()
-    // .headers({
-    //   Authorization: "Bearer " + token,
-    // })
-    .get("http://localhost:3000/orbit/api/transaksi/awb/data/nmnf")
-    .then(function (data) {
-      var datanya = JSON.parse(data.text());
-
-      if (datanya.data.length > 0) {
-        var options = datanya.data.map(function (i) {
-          return `<option value="${i.trnnohawb}">${i.trnnohawb}</option>`;
-        });
-      }
-
-      $("#hawbSelect").html(options.join("")).trigger("change");
-    })
-    .catch(function (error) {
-      console.error("Error:", error);
-    });
-}
-
 function loadTable(data) {
   $$("table").showProgress({
     type: "icon",
@@ -150,8 +68,8 @@ var form = {
                 { type: "section", template: "Data Manifest" },
                 {
                   view: "text",
-                  name: "mnfid",
-                  id: "mnfid",
+                  name: "trnmnomanifest",
+                  id: "trnmnomanifest",
                   label: "No. Manifest",
                   labelPosition: "top",
                   minWidth: 300,
@@ -159,8 +77,8 @@ var form = {
                 },
                 {
                   view: "datepicker",
-                  name: "mnfdate",
-                  id: "mnfdate",
+                  name: "trnmanifestdate",
+                  id: "trnmanifestdate",
                   label: "Tanggal Manifest",
                   labelPosition: "top",
                   minWidth: 300,
@@ -168,108 +86,198 @@ var form = {
                 },
                 {
                   view: "combo",
-                  label: "Origin",
+                  label: "Nama Customer",
                   value: "",
                   labelPosition: "top",
                   options: [],
                   minWidth: 300,
-                  name: "mnftlcorg",
-                  id: "mnftlcorg",
+                  name: "cltbcust_csacc",
+                  id: "cltbcust_csacc",
                   required: true,
-                },
-                {
-                  view: "combo",
-                  label: "Destinasi",
-                  value: "",
-                  labelPosition: "top",
-                  options: [],
-                  minWidth: 300,
-                  name: "mnftlcdst",
-                  id: "mnftlcdst",
-                  required: true,
+                  on: {
+                    onChange: function (newValue, oldValue) {
+                      if (newValue) {
+                        webix
+                          .ajax()
+                          // .headers({
+                          //   Authorization: "Bearer " + token,
+                          // })
+                          .get(
+                            "http://localhost:3000/orbit/api/master/customer/wawb/bycustid/" +
+                              newValue
+                          )
+                          .then(function (data) {
+                            var datanya = JSON.parse(data.text());
+
+                            if (datanya.data.cldtracehtrans.length > 0) {
+                              var options = datanya.data.cldtracehtrans.map(
+                                function (i) {
+                                  return `<option value="${i.trnnohawb}">${i.trnnohawb}</option>`;
+                                }
+                              );
+                            }
+
+                            $("#hawbSelect")
+                              .html(options.join(""))
+                              .trigger("change");
+                          })
+                          .catch(function (error) {
+                            console.error("Error:", error);
+                          });
+                      }
+                    },
+                  },
                 },
               ],
             },
             {
               margin: 10,
               rows: [
-                { type: "section", template: "Data Pengiriman" },
+                { type: "section", template: "Data MAWB" },
                 {
-                  view: "combo",
-                  label: "Moda",
-                  value: "",
-                  labelPosition: "top",
-                  options: [
+                  id: "formMawb",
+                  rows: [
                     {
-                      id: "darat",
-                      value: "Darat",
-                    },
-                    {
-                      id: "laut",
-                      value: "Laut",
-                    },
-                    {
-                      id: "udara",
-                      value: "Udara",
+                      responsive: "formMawb",
+                      cols: [
+                        {
+                          margin: 10,
+                          rows: [
+                            {
+                              id: "rowMawb",
+                              margin: 10,
+                              rows: [
+                                {
+                                  responsive: "rowMawb",
+                                  cols: [
+                                    {
+                                      view: "text",
+                                      name: "trnmmawbprefix",
+                                      id: "trnmmawbprefix",
+                                      label: "Prefix",
+                                      labelPosition: "top",
+                                      minWidth: 150,
+                                      required: true,
+                                      on: {
+                                        onChange: function () {
+                                          let value = this.getValue().replace(
+                                            /[^0-9]/g,
+                                            ""
+                                          );
+
+                                          this.setValue(value);
+                                        },
+                                      },
+                                    },
+                                    {
+                                      view: "text",
+                                      name: "trnmmawbsmu",
+                                      id: "trnmmawbsmu",
+                                      label: "SMU",
+                                      labelPosition: "top",
+                                      minWidth: 150,
+                                      required: true,
+                                      on: {
+                                        onChange: function () {
+                                          let value = this.getValue().replace(
+                                            /[^0-9]/g,
+                                            ""
+                                          );
+
+                                          this.setValue(value);
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
                     },
                   ],
-                  minWidth: 300,
-                  name: "mnfmoda",
-                  id: "mnfmoda",
-                  required: true,
                 },
                 {
                   view: "text",
-                  name: "mnftypearmada",
-                  id: "mnftypearmada",
-                  label: "Jenis Armada",
+                  name: "trnmflightnumber",
+                  id: "trnmflightnumber",
+                  label: "No. Penerbangan",
                   labelPosition: "top",
                   minWidth: 300,
                   required: true,
                 },
                 {
-                  view: "text",
-                  name: "mnfvendordelivery",
-                  id: "mnfvendordelivery",
-                  label: "Vendor",
+                  view: "datepicker",
+                  name: "trnmflightdate",
+                  id: "trnmflightdate",
+                  label: "Tanggal Keberangkatan",
                   labelPosition: "top",
                   minWidth: 300,
                   required: true,
                 },
                 {
-                  view: "text",
-                  name: "mnfplatno",
-                  id: "mnfplatno",
-                  label: "No. Kendaraan",
-                  labelPosition: "top",
-                  minWidth: 300,
-                },
-                {
-                  view: "text",
-                  name: "mnfpic",
-                  id: "mnfpic",
-                  label: "Nama PIC",
+                  view: "datepicker",
+                  name: "trnmarrivaldate",
+                  id: "trnmarrivaldate",
+                  label: "Tanggal Kedatangan",
                   labelPosition: "top",
                   minWidth: 300,
                   required: true,
                 },
                 {
                   view: "text",
-                  name: "mnfphone",
-                  id: "mnfphone",
-                  label: "Telp PIC",
+                  name: "trnmpcs",
+                  id: "trnmpcs",
+                  label: "Pcs",
                   labelPosition: "top",
                   minWidth: 300,
+                  inputAlign: "right",
+                  value: "0",
                   required: true,
+                  on: {
+                    onChange: function () {
+                      let value = this.getValue().replace(/[^0-9]/g, "");
+
+                      this.setValue(value);
+                    },
+                  },
                 },
                 {
-                  view: "textarea",
-                  id: "mnfremark",
-                  name: "mnfremark",
-                  height: 120,
-                  label: "Remark",
+                  view: "text",
+                  name: "trnmgrossswt",
+                  id: "trnmgrossswt",
+                  label: "Gross Weight",
                   labelPosition: "top",
                   minWidth: 300,
+                  inputAlign: "right",
+                  value: "0",
+                  required: true,
+                  on: {
+                    onChange: function () {
+                      let value = this.getValue().replace(/[^0-9.]/g, "");
+
+                      this.setValue(value);
+                    },
+                  },
+                },
+                {
+                  view: "text",
+                  name: "trnmchargeswt",
+                  id: "trnmchargeswt",
+                  label: "Chargeable Weight",
+                  labelPosition: "top",
+                  minWidth: 300,
+                  inputAlign: "right",
+                  value: "0",
+                  required: true,
+                  on: {
+                    onChange: function () {
+                      let value = this.getValue().replace(/[^0-9.]/g, "");
+
+                      this.setValue(value);
+                    },
+                  },
                 },
               ],
             },
@@ -324,15 +332,6 @@ var form = {
                         );
 
                         adjustHeight();
-
-                        $("#hawbSelect").on("select2:unselect", function (e) {
-                          let removedHawb = e.params.data.id;
-                          let option = $("#hawbSelect").find(`option[value="${removedHawb}"]`);
-                  
-                          if (option.attr("data-save") === "true") {
-                            console.log("Removed saved HAWB:", removedHawb);
-                          }
-                        });
 
                         $("#submitHawb").on("click", function () {
                           let selectedValues = $("#hawbSelect").val();
@@ -411,16 +410,17 @@ var form = {
     },
   ],
   rules: {
-    mnfid: webix.rules.isNotEmpty,
-    mnfdate: webix.rules.isNotEmpty,
-    mnftlcorg: webix.rules.isNotEmpty,
-    mnftlcdst: webix.rules.isNotEmpty,
-    mnfmoda: webix.rules.isNotEmpty,
-    mnftypearmada: webix.rules.isNotEmpty,
-    mnfvendordelivery: webix.rules.isNotEmpty,
-    mnfplatno: webix.rules.isNotEmpty,
-    mnfpic: webix.rules.isNotEmpty,
-    mnfphone: webix.rules.isNotEmpty,
+    trnmnomanifest: webix.rules.isNotEmpty,
+    trnmanifestdate: webix.rules.isNotEmpty,
+    cltbcust_csacc: webix.rules.isNotEmpty,
+    trnmmawbprefix: webix.rules.isNotEmpty,
+    trnmmawbsmu: webix.rules.isNotEmpty,
+    trnmflightnumber: webix.rules.isNotEmpty,
+    trnmflightdate: webix.rules.isNotEmpty,
+    trnmarrivaldate: webix.rules.isNotEmpty,
+    trnmpcs: webix.rules.isNotEmpty,
+    trnmgrossswt: webix.rules.isNotEmpty,
+    trnmchargeswt: webix.rules.isNotEmpty,
   },
 };
 
@@ -434,35 +434,26 @@ function submit_manifest() {
       return;
     }
 
-    let mdate = $$("mnfdate").getValue();
+    let mdate = $$("trnmanifestdate").getValue();
     if (mdate) {
       mdate.setMinutes(mdate.getMinutes() - mdate.getTimezoneOffset());
     }
+    let fdate = $$("trnmflightdate").getValue();
+    if (fdate) {
+      fdate.setMinutes(fdate.getMinutes() - fdate.getTimezoneOffset());
+    }
+    let adate = $$("trnmarrivaldate").getValue();
+    if (adate) {
+      adate.setMinutes(adate.getMinutes() - adate.getTimezoneOffset());
+    }
 
     var formData = form.getValues();
-    formData.mnfdate = mdate;
+    formData.trnmanifestdate = mdate;
+    formData.trnmflightdate = fdate;
+    formData.trnmarrivaldate = adate;
     formData.awbs = selectedHAWB;
 
-    console.log(formData);
-
-    webix
-      .ajax()
-      .headers({ "Content-Type": "application/json" })
-      .post(
-        "http://localhost:3000/orbit/api/transaksi/manifest/tambah",
-        formData
-      )
-      .then(function (data) {
-        var datanya = JSON.parse(data.text());
-        webix.message({
-          type: "success",
-          text: datanya.data,
-        });
-      })
-      .catch(function (err) {
-        console.error("Error loading data:", err);
-        webix.message({ type: "error", text: err.responseText });
-      });
+    console.log(formData)
   }
 }
 
@@ -547,13 +538,5 @@ webix.ready(function () {
     grid.adjust();
   });
 
-  loadComboData("master/tlc/data", "mnftlcorg", "tltlccode", "tlname");
-  loadComboData("master/tlc/data", "mnftlcdst", "tltlccode", "tlname");
-
-  if (window.pageId) {
-    loadData(window.pageId);
-    loadHawbForEdit(window.pageId);
-  } else {
-    loadHawb();
-  }
+  loadComboData("master/customer/data", "cltbcust_csacc", "csacc", "csname");
 });

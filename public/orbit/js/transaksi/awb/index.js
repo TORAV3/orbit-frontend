@@ -22,7 +22,6 @@ function loadData(status = "all") {
             trntypeofpackage: i.cltbtypeofpackage.pkdesc,
             trnorg: i.cltbtlc.tlname,
             trndest: i.trndest,
-            trnsubdest: i.trnsubdest,
           };
         });
 
@@ -321,10 +320,9 @@ var tabcols = [
   },
   {
     id: "trnnohawb",
-    header: { text: "No. AWB", css: { "text-align": "center" } },
+    header: "No. HAWB",
     width: 150,
     sort: "string",
-    css: { "text-align": "center" },
   },
   {
     id: "cltbcust_csacc",
@@ -334,9 +332,8 @@ var tabcols = [
   },
   {
     id: "trndate",
-    header: { text: "Tanggal", css: { "text-align": "center" } },
+    header: "Tanggal",
     width: 170,
-    css: { "text-align": "center" },
   },
   {
     id: "trntypeofservice",
@@ -346,31 +343,21 @@ var tabcols = [
   },
   {
     id: "trntypeofpackage",
-    header: { text: "Tipe Kiriman", css: { "text-align": "center" } },
+    header: "Tipe Kiriman",
     width: 100,
     sort: "string",
-    css: { "text-align": "center" },
   },
   {
     id: "trnorg",
-    header: { text: "Origin", css: { "text-align": "center" } },
+    header: "Origin",
     width: 150,
     sort: "string",
-    css: { "text-align": "center" },
   },
   {
     id: "trndest",
-    header: { text: "Destinasi", css: { "text-align": "center" } },
+    header: "Destinasi",
     width: 150,
     sort: "string",
-    css: { "text-align": "center" },
-  },
-  {
-    id: "trnsubdest",
-    header: { text: "HUB", css: { "text-align": "center" } },
-    width: 180,
-    sort: "string",
-    css: { "text-align": "center" },
   },
 ];
 
