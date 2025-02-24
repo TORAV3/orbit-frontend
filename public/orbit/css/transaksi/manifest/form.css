@@ -1,3 +1,24 @@
+.pagerstyle {
+  text-align: right;
+}
+
+.pagerstyle .webix_pager_item,
+.pagerstyle .webix_pager_item:hover,
+.pagerstyle .webix_pager_item:focus {
+  background-color: #398bf1;
+  color: white;
+}
+
+.tableStyle .webix_ss_header,
+.tableStyle .webix_hcolumn,
+.tableStyle .webix_ss_vscroll_header,
+.tableStyle .webix_dd_drag_column,
+.tableStyle .webix_hs_left,
+.tableStyle .webix_hs_center,
+.tableStyle .webix_hs_right {
+  background: white;
+}
+
 .btnSimpan .webix_el_box button,
 .btnSimpan .webix_el_box button:hover,
 .btnSimpan .webix_el_box button:focus {

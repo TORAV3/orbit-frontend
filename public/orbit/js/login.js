@@ -56,7 +56,7 @@ function submit_form() {
           text: "Login berhasil",
         });
         setTimeout(() => {
-          window.location.href = "/transaksi/awb";
+          window.location.href = "/transaksi/hawb";
         }, 1300);
       })
       .catch(function (err) {

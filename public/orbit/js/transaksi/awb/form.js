@@ -104,65 +104,6 @@ function loadComboData(url, comboId, varid, varbesname) {
     });
 }
 
-var arrCustomer = [
-  {
-    csacc: "3690400008",
-    csname: "CARGIL INDONESIA, PT",
-  },
-  {
-    csacc: "3690700078",
-    csname: "COGNITO, PT",
-  },
-];
-
-var arrService = [
-  {
-    svsrv: "DFE",
-    svname: "DELIVERY FEE",
-  },
-  {
-    svsrv: "NV1",
-    svname: "HUAWEI Van 2 hours",
-  },
-];
-
-var arrTlc = [
-  {
-    tltlccode: "GUR",
-    tlname: "GUNUNG ANYAR",
-  },
-  {
-    tltlccode: "AMA",
-    tlname: "AMLAPURA",
-  },
-  {
-    tltlccode: "BAK",
-    tlname: "BATU SANGKAR",
-  },
-];
-
-var arrPaymentType = [
-  {
-    pyid: "TF",
-    pydesc: "Via Transfer",
-  },
-  {
-    pyid: "COD",
-    pydesc: "Bayar Ditempat",
-  },
-];
-
-var arrPackageType = [
-  {
-    pkid: "P",
-    pkdesc: "Package",
-  },
-  {
-    pkid: "D",
-    pkdesc: "Dokumen",
-  },
-];
-
 var form = {
   view: "form",
   id: "awbForm",

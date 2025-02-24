@@ -29,8 +29,17 @@ app.get("/transaksi/hawb/form/:id", checkToken, (req, res) => {
   res.render("contents/transaksi/awb/form", { id });
 });
 
+app.get("/transaksi/manifest", checkToken, (req, res) => {
+  res.render("contents/transaksi/manifest/index");
+});
+
 app.get("/transaksi/manifest/form", checkToken, (req, res) => {
   res.render("contents/transaksi/manifest/form");
+});
+
+app.get("/transaksi/manifest/form/:id", checkToken, (req, res) => {
+  const { id } = req.params;
+  res.render("contents/transaksi/manifest/form", { id });
 });
 
 app.get("/transaksi/checkpoint", (req, res) => {
