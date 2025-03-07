@@ -20,6 +20,10 @@ app.get("/transaksi/hawb", checkToken, (req, res) => {
   res.render("contents/transaksi/awb/index");
 });
 
+app.get("/tracking", (req, res) => {
+  res.render("contents/tracking/index");
+});
+
 app.get("/transaksi/hawb/form", checkToken, (req, res) => {
   res.render("contents/transaksi/awb/form");
 });
