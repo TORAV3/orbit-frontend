@@ -55,7 +55,7 @@ html(lang="en" data-theme="light")
                   i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
                   | Package
           if userData.cltbduser.tawb === '1'
-            li(class=url.includes('/transaksi/hawb') ? 'dropdown open' : 'dropdown')
+            li(class=url.includes('/transaksi/hawb') || url.includes('/transaksi/manifest') ? 'dropdown open' : 'dropdown')
               a(href="javascript:void(0)")
                 iconify-icon(icon="solar:home-smile-angle-outline" class="menu-icon")
                 span Transaksi
@@ -65,6 +65,10 @@ html(lang="en" data-theme="light")
                     a(href="/transaksi/hawb" class=url.includes('/transaksi/hawb') ? 'active-page' : '')
                       i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
                       | Daftar HAWB
+                  li(class=url.includes('/transaksi/manifest') ? 'active-page' : '') 
+                    a(href="/transaksi/manifest" class=url.includes('/transaksi/manifest') ? 'active-page' : '')
+                      i(class="ri-circle-fill circle-icon text-primary-600 w-auto")
+                      | Daftar Manifest
 
     main.dashboard-main
       .navbar-header

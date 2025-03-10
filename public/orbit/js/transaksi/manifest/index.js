@@ -1,8 +1,4 @@
 function loadData(status = "all") {
-  $$("table").showProgress({
-    type: "icon",
-  });
-
   webix
     .ajax()
     // .headers({
@@ -234,8 +230,6 @@ webix.ready(function () {
       },
     }
   );
-
-  webix.extend($$("table"), webix.ProgressBar);
 
   webix.event(window, "resize", function () {
     grid.adjust();

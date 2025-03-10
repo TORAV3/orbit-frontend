@@ -372,7 +372,7 @@ var table = {
     editBtn: function (event, id, node) {
       var item = this.getItem(id.row);
       var trnnohawb = item.trnnohawb;
-      window.location.href = `/transaksi/awb/form/${trnnohawb}`;
+      window.location.href = `/transaksi/hawb/form/${trnnohawb}`;
     },
     delBtn: function (event, id, node) {
       var item = this.getItem(id.row);

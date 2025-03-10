@@ -27,7 +27,7 @@ function loadData(id) {
 
 function loadHawbForEdit(mnfid) {
   Promise.all([
-    webix.ajax().get("http://localhost:3000/orbit/api/transaksi/awb/data/nmnf"), // Get all available HAWBs
+    webix.ajax().get("http://localhost:3000/orbit/api/transaksi/awb/data/nmnf"),
     webix
       .ajax()
       .get(
@@ -46,11 +46,31 @@ function loadHawbForEdit(mnfid) {
       var options = combinedHawbs.map(function (hawb) {
         let isSelected = manifestHawbs.includes(hawb) ? "selected" : "";
         let dataSave = manifestHawbs.includes(hawb) ? `data-save="true"` : "";
-        return `<option value="${hawb}" ${isSelected} ${dataSave}>${hawb}</option>`;
+        return `<option value="${
+          hawb.trnnohawb ? hawb.trnnohawb : hawb
+        }" ${isSelected} ${dataSave}>${hawb.trnnohawb ? hawb.trnnohawb : hawb}</option>`;
       });
 
       $("#hawbSelect").html(options.join("")).trigger("change");
 
+      webix
+        .ajax()
+        .headers({
+          "Content-Type": "application/json",
+          // Authorization: "Bearer " + token,
+        })
+        .post(
+          "http://localhost:3000/orbit/api/transaksi/awb/bylist",
+          JSON.stringify({ awbs: manifestHawbs })
+        )
+        .then(function (data) {
+          var datanya = JSON.parse(data.text());
+
+          loadTable(datanya.data);
+        })
+        .catch(function (error) {
+          console.error("Error:", error);
+        });
     })
     .catch(function (error) {
       console.error("Error:", error);
@@ -81,10 +101,6 @@ function loadHawb() {
 }
 
 function loadTable(data) {
-  $$("table").showProgress({
-    type: "icon",
-  });
-
   if (data.length > 0) {
     const transformedData = data.map(function (i) {
       return {
@@ -148,6 +164,12 @@ var form = {
               margin: 10,
               rows: [
                 { type: "section", template: "Data Manifest" },
+                {
+                  view: "text",
+                  name: "method",
+                  id: "method",
+                  hidden: true,
+                },
                 {
                   view: "text",
                   name: "mnfid",
@@ -327,10 +349,48 @@ var form = {
 
                         $("#hawbSelect").on("select2:unselect", function (e) {
                           let removedHawb = e.params.data.id;
-                          let option = $("#hawbSelect").find(`option[value="${removedHawb}"]`);
-                  
+                          let option = $("#hawbSelect").find(
+                            `option[value="${removedHawb}"]`
+                          );
+
                           if (option.attr("data-save") === "true") {
-                            console.log("Removed saved HAWB:", removedHawb);
+                            webix
+                              .confirm({
+                                title: "Hapus Data",
+                                ok: "Ya",
+                                cancel: "Tidak",
+                                text: "Data HAWB yang sudah terdaftar pada manifest ini akan dihapus.",
+                              })
+                              .then(function () {
+                                console.log("Removed saved HAWB:", removedHawb);
+                                webix
+                                  .ajax()
+                                  // .headers({
+                                  //   Authorization: "Bearer " + token,
+                                  // })
+                                  .get(
+                                    "http://localhost:3000/orbit/api/transaksi/manifest/awb/delete/byawb/" +
+                                      removedHawb
+                                  )
+                                  .then(function (data) {
+                                    var datanya = JSON.parse(data.text());
+                                    setTimeout(() => {
+                                      window.location.href =
+                                        "/transaksi/manifest/form/" +
+                                        window.pageId;
+                                    }, 1000);
+                                    console.log(datanya.data);
+                                  })
+                                  .catch(function (error) {
+                                    console.error("Error:", error);
+                                  });
+                              })
+                              .fail(function () {
+                                let $select = $("#hawbSelect");
+                                let currentValues = $select.val() || [];
+                                currentValues.push(removedHawb);
+                                $select.val(currentValues).trigger("change");
+                              });
                           }
                         });
 
@@ -443,26 +503,53 @@ function submit_manifest() {
     formData.mnfdate = mdate;
     formData.awbs = selectedHAWB;
 
-    console.log(formData);
-
-    webix
-      .ajax()
-      .headers({ "Content-Type": "application/json" })
-      .post(
-        "http://localhost:3000/orbit/api/transaksi/manifest/tambah",
-        formData
-      )
-      .then(function (data) {
-        var datanya = JSON.parse(data.text());
-        webix.message({
-          type: "success",
-          text: datanya.data,
+    if (formData.method === "update") {
+      console.log(formData);
+      webix
+        .ajax()
+        .headers({ "Content-Type": "application/json" })
+        .put(
+          "http://localhost:3000/orbit/api/transaksi/manifest/edit/" +
+            formData.mnfid,
+          formData
+        )
+        .then(function (data) {
+          var datanya = JSON.parse(data.text());
+          webix.message({
+            type: "success",
+            text: datanya.data,
+          });
+          setTimeout(() => {
+            window.location.href = "/transaksi/manifest" + window.pageId;
+          }, 1200);
+        })
+        .catch(function (err) {
+          console.error("Error loading data:", err);
+          webix.message({ type: "error", text: err.responseText });
         });
-      })
-      .catch(function (err) {
-        console.error("Error loading data:", err);
-        webix.message({ type: "error", text: err.responseText });
-      });
+    } else {
+      webix
+        .ajax()
+        .headers({ "Content-Type": "application/json" })
+        .post(
+          "http://localhost:3000/orbit/api/transaksi/manifest/tambah",
+          formData
+        )
+        .then(function (data) {
+          var datanya = JSON.parse(data.text());
+          webix.message({
+            type: "success",
+            text: datanya.data,
+          });
+          setTimeout(() => {
+            window.location.href = "/transaksi/manifest" + window.pageId;
+          }, 1200);
+        })
+        .catch(function (err) {
+          console.error("Error loading data:", err);
+          webix.message({ type: "error", text: err.responseText });
+        });
+    }
   }
 }
 
@@ -517,7 +604,7 @@ var table = {
   columns: tabcols,
   css: "tableStyle",
   autoheight: true,
-  minHeight: 100,
+  minHeight: 80,
   navigation: true,
   pager: "pager",
 };
@@ -541,8 +628,6 @@ webix.ready(function () {
     rows: [form, datatable],
   });
 
-  webix.extend($$("table"), webix.ProgressBar);
-
   webix.event(window, "resize", function () {
     grid.adjust();
   });
@@ -553,7 +638,9 @@ webix.ready(function () {
   if (window.pageId) {
     loadData(window.pageId);
     loadHawbForEdit(window.pageId);
+    $$("method").setValue("update");
   } else {
+    $$("method").setValue("create");
     loadHawb();
   }
 });

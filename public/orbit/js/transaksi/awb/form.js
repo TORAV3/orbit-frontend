@@ -41,9 +41,9 @@ function loadData(id) {
       $$("trncharge1stkg").setValue(
         parseFloat(datanya.data.trncharge1stkg.replace(".00", "").trim())
       );
-      $$("trnchargekg").setValue(
-        parseFloat(datanya.data.trnchargekg.replace(".00", "").trim())
-      );
+      // $$("trnchargekg").setValue(
+      //   parseFloat(datanya.data.trnchargekg.replace(".00", "").trim())
+      // );
       $$("trnchargepacking").setValue(
         parseFloat(datanya.data.trnchargepacking.replace(".00", "").trim())
       );
@@ -73,6 +73,11 @@ function loadData(id) {
       $$("trnpickupbyname").setValue(datanya.data.trnpickupbyname);
       $$("trnpickupdate").setValue(datanya.data.trnpickupdate);
       $$("trnpickuptime").setValue(datanya.data.trnpickuptime);
+      $$("trnprefix").setValue(datanya.data.trnprefix);
+      $$("trnsmu").setValue(datanya.data.trnsmu);
+      $$("trnfnumber").setValue(datanya.data.trnfnumber);
+      $$("trnfdate").setValue(datanya.data.trnfdate);
+      $$("trnadate").setValue(datanya.data.trnadate);
     })
     .catch(function (error) {
       console.error("Error:", error);
@@ -120,6 +125,12 @@ var form = {
               margin: 10,
               rows: [
                 { type: "section", template: "Data Transaksi" },
+                {
+                  view: "text",
+                  name: "method",
+                  id: "method",
+                  hidden: true,
+                },
                 {
                   view: "text",
                   name: "trnnohawb",
@@ -700,6 +711,84 @@ var form = {
       ],
     },
     {
+      id: "formresMAWB",
+      rows: [
+        {
+          responsive: "formresMAWB",
+          cols: [
+            {
+              margin: 10,
+              rows: [
+                { type: "section", template: "Data MAWB" },
+                {
+                  id: "rowMAWB1",
+                  margin: 10,
+                  rows: [
+                    {
+                      responsive: "rowMAWB1",
+                      cols: [
+                        {
+                          view: "text",
+                          name: "trnprefix",
+                          id: "trnprefix",
+                          label: "Prefix",
+                          labelPosition: "top",
+                          minWidth: 300,
+                        },
+                        {
+                          view: "text",
+                          name: "trnsmu",
+                          id: "trnsmu",
+                          label: "SMU",
+                          labelPosition: "top",
+                          minWidth: 300,
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  id: "rowMAWB2",
+                  margin: 10,
+                  rows: [
+                    {
+                      responsive: "rowMAWB2",
+                      cols: [
+                        {
+                          view: "text",
+                          name: "trnfnumber",
+                          id: "trnfnumber",
+                          label: "Flight Number",
+                          labelPosition: "top",
+                          minWidth: 300,
+                        },
+                        {
+                          view: "datepicker",
+                          name: "trnfdate",
+                          id: "trnfdate",
+                          label: "Flight Date",
+                          labelPosition: "top",
+                          minWidth: 300,
+                        },
+                        {
+                          view: "datepicker",
+                          name: "trnadate",
+                          id: "trnadate",
+                          label: "Arrival Date",
+                          labelPosition: "top",
+                          minWidth: 300,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       id: "formres6",
       margin: 10,
       rows: [
@@ -1268,21 +1357,43 @@ function submit_awb() {
     formData.trndate = date;
     formData.trnpickupdate = pdate;
 
-    webix
-      .ajax()
-      // .headers({ Authorization: "Bearer " + token })
-      .post("http://localhost:3000/orbit/api/transaksi/awb/tambah", formData)
-      .then(function (data) {
-        var datanya = JSON.parse(data.text());
-        webix.message({
-          type: "success",
-          text: datanya.data,
+    if (formData.method === "update") {
+      webix
+        .ajax()
+        // .headers({ Authorization: "Bearer " + token })
+        .put(
+          "http://localhost:3000/orbit/api/transaksi/awb/edit/" +
+            formData.trnnohawb,
+          formData
+        )
+        .then(function (data) {
+          var datanya = JSON.parse(data.text());
+          webix.message({
+            type: "success",
+            text: datanya.data,
+          });
+        })
+        .catch(function (err) {
+          console.error("Error loading data:", err);
+          webix.message({ type: "error", text: err.responseText });
         });
-      })
-      .catch(function (err) {
-        console.error("Error loading data:", err);
-        webix.message({ type: "error", text: err.responseText });
-      });
+    } else {
+      webix
+        .ajax()
+        // .headers({ Authorization: "Bearer " + token })
+        .post("http://localhost:3000/orbit/api/transaksi/awb/tambah", formData)
+        .then(function (data) {
+          var datanya = JSON.parse(data.text());
+          webix.message({
+            type: "success",
+            text: datanya.data,
+          });
+        })
+        .catch(function (err) {
+          console.error("Error loading data:", err);
+          webix.message({ type: "error", text: err.responseText });
+        });
+    }
   }
 }
 
@@ -1393,5 +1504,8 @@ webix.ready(function () {
 
   if (window.pageId) {
     loadData(window.pageId);
+    $$("method").setValue("update");
+  } else {
+    $$("method").setValue("create");
   }
 });
