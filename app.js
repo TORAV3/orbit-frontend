@@ -46,7 +46,7 @@ app.get("/transaksi/manifest/form/:id", checkToken, (req, res) => {
   res.render("contents/transaksi/manifest/form", { id });
 });
 
-app.get("/transaksi/checkpoint", (req, res) => {
+app.get("/transaksi/checkpoint", checkToken, (req, res) => {
   res.render("contents/transaksi/checkpoint");
 });
 
